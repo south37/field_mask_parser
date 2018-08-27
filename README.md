@@ -1,8 +1,7 @@
 # FieldMaskParser
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/field_mask_parser`. To experiment with that code, run `bin/console` for an interactive prompt.
-
-TODO: Delete this and the text above, and describe your gem
+FieldMask parameter parser.
+If you want to know more about FieldMask, please see https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#fieldmask .
 
 ## Installation
 
@@ -22,7 +21,54 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+`FieldMaskParser.parse` parses FieldMask parameter and returns `FieldMaskParser::Node` object. It requires `paths` string and ActiveRecord class as `root`.
+
+```ruby
+# app/models/user.rb
+
+# == Schema Information
+#
+# Table name: users
+#
+#  id           :integer          not null, primary key
+#
+class User
+  has_one :profile
+end
+```
+
+```ruby
+
+# app/models/profile.rb
+
+# == Schema Information
+#
+# Table name: users
+#
+#  id           :integer          not null, primary key
+#  user_id      :string           not null, indexed
+#  name         :string           not null
+#
+class Profile
+  belongs_to :user
+end
+```
+
+```ruby
+[1] pry> FieldMaskParser.parse(paths: ["id", "profile.name"], root: User).to_h
+=>
+{
+  :name=>nil,
+  :attrs=>[:id],
+  :assocs=>[
+    {
+      :name=>:profile,
+      :attrs=>[:name],
+      :assocs=>[]
+    }
+  ]
+}
+```
 
 ## Development
 
