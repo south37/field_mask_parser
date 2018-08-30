@@ -1,49 +1,18 @@
+require 'field_mask_parser/parser/deep_hash_builder'
+require 'field_mask_parser/parser/deep_hash_node'
+
 module FieldMaskParser
   class Parser
-    # HashBuilder build nested hash from paths (string array).
-    # ex.
-    # param: ["id", "facebook_uid", "detail.id", "detail.email"]
-    # return: {:id=>{}, :facebook_uid=>{}, :detail=>{:id=>{}, :email=>{}}}
-    class HashBuilder
-      class << self
-        # @param [<String>] paths
-        # @return [{ Symbol => Hash }]
-        def build(paths)
-          h = {}
-          paths.each do |path|
-            deep_push!(h, path.split('.').map(&:strip).map(&:to_sym))
-          end
-          h
-        end
-
-      private
-
-        # @param [Hash] h
-        # @param [<String>] field_list
-        def deep_push!(h, field_list)
-          if field_list.size < 1
-            # Do nothing
-            return
-          end
-          f = field_list.first
-          if !h[f]
-            h[f] = {}
-          end
-          deep_push!(h[f], field_list[1..-1])
-        end
-      end
-    end
-
     # @param [<String>] paths
     def initialize(paths:, root:, dispatcher: nil)
-      @attrs_or_assocs = HashBuilder.build(paths)
+      @attrs_or_assocs = DeepHashBuilder.build(paths)
       @root            = root
       @dispatcher      = dispatcher || Dispatcher::ActiveRecordDispatcher.new
     end
 
     # @reutrn [Node]
     def parse
-      r = Node.new(name: nil)
+      r = Node.new(name: nil, is_leaf: false)
       set_attrs_and_assocs!(r, @attrs_or_assocs, @root)
       r
     end
@@ -51,19 +20,20 @@ module FieldMaskParser
   private
 
     # @param [Node] node
-    # @param [Hash] attrs_or_assocs
+    # @param [{ Symbol => DeepHashNode }] attrs_or_assocs
     # @param [Class] klass inheriting ActiveRecord::Base
     def set_attrs_and_assocs!(node, attrs_or_assocs, klass)
-      attrs_or_assocs.each do |name, _attrs_or_assocs|
+      attrs_or_assocs.each do |name, dhn|
         case @dispatcher.dispatch(klass, name)
         when Dispatcher::Type::ATTRIBUTE
+          # NOTE: If dhn.is_leaf is false, it is invalid. But ignore it now.
           node.push_attr(name)
         when Dispatcher::Type::ASSOCIATION
-          n = Node.new(name: name)
+          n = Node.new(name: name, is_leaf: dhn.is_leaf)
           node.push_assoc(n)
-          if _attrs_or_assocs.size > 0
+          if dhn.children.size > 0
             _klass = get_assoc_klass(klass, name)
-            set_attrs_and_assocs!(n, _attrs_or_assocs, _klass)
+            set_attrs_and_assocs!(n, dhn.children, _klass)
           end
         when Dispatcher::Type::UNKNOWN
           # Ignore invalid field

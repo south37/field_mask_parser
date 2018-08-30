@@ -1,5 +1,5 @@
+require 'spec_helper'
 require 'active_record'
-require 'field_mask_parser'
 
 describe FieldMaskParser do
   describe ".parse" do
@@ -25,25 +25,57 @@ describe FieldMaskParser do
 
     it "parses paths and generates node" do
       expect(FieldMaskParser.parse(paths: [""], root: User).to_h).to eq({
-        name:   nil,
-        attrs:  [],
-        assocs: [],
+        name:    nil,
+        is_leaf: false,
+        attrs:   [],
+        assocs:  [],
       })
 
       expect(FieldMaskParser.parse(paths: ["id"], root: User).to_h).to eq({
-        name:   nil,
-        attrs:  [:id],
-        assocs: [],
+        name:    nil,
+        is_leaf: false,
+        attrs:   [:id],
+        assocs:  [],
       })
 
       expect(FieldMaskParser.parse(paths: ["id", "profile.name"], root: User).to_h).to eq({
-        name:   nil,
-        attrs:  [:id],
-        assocs: [
+        name:    nil,
+        is_leaf: false,
+        attrs:   [:id],
+        assocs:  [
           {
-            name:   :profile,
-            attrs:  [:name],
-            assocs: [],
+            name:    :profile,
+            is_leaf: false,
+            attrs:   [:name],
+            assocs:  [],
+          }
+        ],
+      })
+
+      expect(FieldMaskParser.parse(paths: ["id", "profile"], root: User).to_h).to eq({
+        name:    nil,
+        is_leaf: false,
+        attrs:   [:id],
+        assocs:  [
+          {
+            name:    :profile,
+            is_leaf: true,
+            attrs:   [],
+            assocs:  [],
+          }
+        ],
+      })
+
+      expect(FieldMaskParser.parse(paths: ["id", "profile", "profile.name"], root: User).to_h).to eq({
+        name:    nil,
+        is_leaf: false,
+        attrs:   [:id],
+        assocs:  [
+          {
+            name:    :profile,
+            is_leaf: true,
+            attrs:   [:name],
+            assocs:  [],
           }
         ],
       })
