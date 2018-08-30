@@ -59,10 +59,12 @@ end
 =>
 {
   :name=>nil,
+  :is_leaf=>false,
   :attrs=>[:id],
   :assocs=>[
     {
       :name=>:profile,
+      :is_leaf=>false,
       :attrs=>[:name],
       :assocs=>[]
     }
