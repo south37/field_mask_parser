@@ -12,7 +12,7 @@ module FieldMaskParser
 
     # @reutrn [Node]
     def parse
-      r = Node.new(name: nil, is_leaf: false)
+      r = Node.new(name: nil, is_leaf: false, klass: @root)
       set_attrs_and_assocs!(r, @attrs_or_assocs, @root)
       r
     end
@@ -29,10 +29,10 @@ module FieldMaskParser
           # NOTE: If dhn.is_leaf is false, it is invalid. But ignore it now.
           node.push_attr(name)
         when Dispatcher::Type::ASSOCIATION
-          n = Node.new(name: name, is_leaf: dhn.is_leaf)
+          _klass = get_assoc_klass(klass, name)
+          n = Node.new(name: name, is_leaf: dhn.is_leaf, klass: _klass)
           node.push_assoc(n)
           if dhn.children.size > 0
-            _klass = get_assoc_klass(klass, name)
             set_attrs_and_assocs!(n, dhn.children, _klass)
           end
         when Dispatcher::Type::UNKNOWN

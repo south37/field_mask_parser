@@ -27,6 +27,7 @@ describe FieldMaskParser do
       expect(FieldMaskParser.parse(paths: [""], root: User).to_h).to eq({
         name:    nil,
         is_leaf: false,
+        klass:   User,
         attrs:   [],
         assocs:  [],
       })
@@ -34,6 +35,7 @@ describe FieldMaskParser do
       expect(FieldMaskParser.parse(paths: ["id"], root: User).to_h).to eq({
         name:    nil,
         is_leaf: false,
+        klass:   User,
         attrs:   [:id],
         assocs:  [],
       })
@@ -41,11 +43,13 @@ describe FieldMaskParser do
       expect(FieldMaskParser.parse(paths: ["id", "profile.name"], root: User).to_h).to eq({
         name:    nil,
         is_leaf: false,
+        klass:   User,
         attrs:   [:id],
         assocs:  [
           {
             name:    :profile,
             is_leaf: false,
+            klass:   Profile,
             attrs:   [:name],
             assocs:  [],
           }
@@ -55,11 +59,13 @@ describe FieldMaskParser do
       expect(FieldMaskParser.parse(paths: ["id", "profile"], root: User).to_h).to eq({
         name:    nil,
         is_leaf: false,
+        klass:   User,
         attrs:   [:id],
         assocs:  [
           {
             name:    :profile,
             is_leaf: true,
+            klass:   Profile,
             attrs:   [],
             assocs:  [],
           }
@@ -69,11 +75,13 @@ describe FieldMaskParser do
       expect(FieldMaskParser.parse(paths: ["id", "profile", "profile.name"], root: User).to_h).to eq({
         name:    nil,
         is_leaf: false,
+        klass:   User,
         attrs:   [:id],
         assocs:  [
           {
             name:    :profile,
             is_leaf: true,
+            klass:   Profile,
             attrs:   [:name],
             assocs:  [],
           }
