@@ -1,14 +1,16 @@
 module FieldMaskParser
   class Node
-    attr_reader :name, :is_leaf, :attrs, :assocs
+    attr_reader :name, :is_leaf, :klass, :attrs, :assocs
 
     # @param [Symbol | NilClass] name nil when being top-level node
     # @param [bool] is_leaf
     # @param [<Symbol>] attrs
     # @param [Set<Node>] assocs
-    def initialize(name:, is_leaf:)
+    # @param [ActiveRecord::Base] klass
+    def initialize(name:, is_leaf:, klass:)
       @name    = name
       @is_leaf = is_leaf
+      @klass   = klass
       @attrs   = []
       @assocs  = []
     end
@@ -27,6 +29,7 @@ module FieldMaskParser
       {
         name:    @name,
         is_leaf: @is_leaf,
+        klass:   @klass,
         attrs:   @attrs,
         assocs:  @assocs.map(&:to_h)
       }
