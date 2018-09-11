@@ -43,7 +43,7 @@ end
 
 # == Schema Information
 #
-# Table name: users
+# Table name: profiles
 #
 #  id           :integer          not null, primary key
 #  user_id      :string           not null, indexed
@@ -60,11 +60,13 @@ end
 {
   :name=>nil,
   :is_leaf=>false,
+  :klass=>User,
   :attrs=>[:id],
   :assocs=>[
     {
       :name=>:profile,
       :is_leaf=>false,
+      :klass=>Profile,
       :attrs=>[:name],
       :assocs=>[]
     }
