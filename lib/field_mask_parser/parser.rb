@@ -47,7 +47,11 @@ module FieldMaskParser
     # @param [Symbol] name
     # @return [Class]
     def get_assoc_klass(parent, name)
-      parent.reflect_on_association(name).klass
+      assocition = parent.reflect_on_association(name)
+      if !assocition
+        raise "#{parent} does not have #{name} assocition!"
+      end
+      assocition.klass
     end
   end
 end
