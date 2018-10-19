@@ -20,6 +20,12 @@ module FieldMaskParser
       def ==(other)
         is_leaf == other.is_leaf && children == other.children
       end
+
+      def to_h
+        @children.map do |field, child|
+          [field, child.to_h]
+        end.to_h
+      end
     end
   end
 end
