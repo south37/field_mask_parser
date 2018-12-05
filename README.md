@@ -62,15 +62,17 @@ end
   :is_leaf=>false,
   :klass=>User,
   :attrs=>[:id],
-  :assocs=>[
+  :has_ones=>[
     {
       :name=>:profile,
       :is_leaf=>false,
       :klass=>Profile,
       :attrs=>[:name],
-      :assocs=>[]
+      :has_ones=>[],
+      :has_manies=>[]
     }
-  ]
+  ],
+  :has_manies=>[]
 }
 ```
 
