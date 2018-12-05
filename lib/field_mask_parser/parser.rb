@@ -24,14 +24,20 @@ module FieldMaskParser
     # @param [Class] klass inheriting ActiveRecord::Base
     def set_attrs_and_assocs!(node, attrs_or_assocs, klass)
       attrs_or_assocs.each do |name, dhn|
-        case @dispatcher.dispatch(klass, name)
+        type = @dispatcher.dispatch(klass, name)
+
+        case type
         when Dispatcher::Type::ATTRIBUTE
           # NOTE: If dhn.is_leaf is false, it is invalid. But ignore it now.
           node.push_attr(name)
-        when Dispatcher::Type::ASSOCIATION
+        when Dispatcher::Type::HAS_ONE, Dispatcher::Type::HAS_MANY
           _klass = get_assoc_klass(klass, name)
           n = Node.new(name: name, is_leaf: dhn.is_leaf, klass: _klass)
-          node.push_assoc(n)
+          if type == Dispatcher::Type::HAS_ONE
+            node.push_has_one(n)
+          else  # Dispatcher::Type::HAS_MANY
+            node.push_has_many(n)
+          end
           if dhn.children.size > 0
             set_attrs_and_assocs!(n, dhn.children, _klass)
           end
