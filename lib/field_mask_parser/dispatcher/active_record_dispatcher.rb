@@ -7,8 +7,15 @@ module FieldMaskParser
       def dispatch(klass, name)
         if klass.attribute_names.include?(name.to_s)
           Type::ATTRIBUTE
-        elsif klass.reflect_on_association(name)
-          Type::ASSOCIATION
+        elsif (assoc = klass.reflect_on_association(name))
+          case assoc
+          when ActiveRecord::Reflection::HasOneReflection
+            Type::HAS_ONE
+          when ActiveRecord::Reflection::HasManyReflection
+            Type::HAS_MANY
+          else
+            raise "invalid association!"
+          end
         else
           Type::UNKNOWN
         end

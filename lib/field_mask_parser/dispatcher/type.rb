@@ -6,9 +6,10 @@ module FieldMaskParser
         @type = type
       end
 
-      ATTRIBUTE   = self.new("Dispatcher::Type::ATTRIBUTE")
-      ASSOCIATION = self.new("Dispatcher::Type::ASSOCIATION")
-      UNKNOWN     = self.new("Dispatcher::Type::UNKNOWN")
+      ATTRIBUTE = self.new("Dispatcher::Type::ATTRIBUTE")
+      HAS_ONE   = self.new("Dispatcher::Type::HAS_ONE")
+      HAS_MANY  = self.new("Dispatcher::Type::HAS_MANY")
+      UNKNOWN   = self.new("Dispatcher::Type::UNKNOWN")
     end
   end
 end
