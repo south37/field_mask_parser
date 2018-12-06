@@ -29,6 +29,10 @@ module FieldMaskParser
       @has_manies.push(n)
     end
 
+    def assocs
+      has_ones + has_manies
+    end
+
     def to_h
       {
         name:       @name,
