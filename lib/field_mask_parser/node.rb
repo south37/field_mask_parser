@@ -43,5 +43,17 @@ module FieldMaskParser
         has_manies: @has_manies.map(&:to_h),
       }
     end
+
+    def to_paths(prefix: [], sort: true)
+      r = []
+      attrs.each do |attr|
+        r << (prefix + [attr]).join(".")
+      end
+      assocs.each do |assoc|
+        r += assoc.to_paths(prefix: prefix + [assoc.name], sort: false)
+      end
+      r.sort! if sort
+      r
+    end
   end
 end

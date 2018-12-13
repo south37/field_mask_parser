@@ -1,39 +1,7 @@
 require 'spec_helper'
-require 'active_record'
 
 describe FieldMaskParser do
   describe ".parse" do
-    class User < ActiveRecord::Base
-      class << self
-        def attribute_names
-          ["id"]
-        end
-      end
-
-      has_one :profile
-      has_many :items
-    end
-
-    class Profile < ActiveRecord::Base
-      class << self
-        def attribute_names
-          ["id", "user_id", "name"]
-        end
-      end
-
-      belongs_to :user
-    end
-
-    class Item < ActiveRecord::Base
-      class << self
-        def attribute_names
-          ["id", "type"]
-        end
-      end
-
-      belongs_to :user
-    end
-
     it "parses paths and generates node" do
       expect(FieldMaskParser.parse(paths: [""], root: User).to_h).to eq({
         name:       nil,
