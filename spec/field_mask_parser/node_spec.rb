@@ -25,4 +25,36 @@ describe FieldMaskParser do
       ]
     end
   end
+
+  describe "#==" do
+    it "returns equality" do
+      node = FieldMaskParser.parse(
+        paths: [
+          "id",
+          "profile.id",
+        ],
+        root: User
+      )
+      expect(node).to eq node
+
+      node2 = FieldMaskParser.parse(
+        paths: [
+          "id",
+          "profile.id",
+        ],
+        root: User
+      )
+      expect(node).to eq node2
+
+      node3 = FieldMaskParser.parse(
+        paths: [
+          "id",
+        ],
+        root: User
+      )
+      expect(node).not_to eq node3
+
+      expect(node).not_to eq 1
+    end
+  end
 end
