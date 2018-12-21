@@ -55,5 +55,10 @@ module FieldMaskParser
       r.sort! if sort
       r
     end
+
+    def ==(other)
+      self.class == other.class &&
+        self.to_paths == other.to_paths
+    end
   end
 end
